@@ -1,0 +1,47 @@
+class Solution {
+    public String minWindow(String s, String t) {
+        
+        if (s.length() == 0 || t.length() == 0 || s.length() < t.length()) {
+            return "";
+        }
+        
+        HashMap<Character, Integer> dict = new HashMap<>();   
+        for (int i = 0; i < t.length(); i++) {
+            int count = dict.getOrDefault(t.charAt(i), 0);
+            dict.put(t.charAt(i), count + 1);
+        }
+        int target = dict.size();
+        
+        int len = 0, left = 0, right = 0, formed = 0;
+        int ansLeft = 0, ansRight = 0;
+        HashMap<Character, Integer> counter = new HashMap<>();
+        
+        while (right < s.length()) {
+            
+            char c = s.charAt(right);
+            int count = counter.getOrDefault(c, 0);
+            counter.put(c, count + 1);
+            
+            if (dict.containsKey(c) && counter.get(c).intValue() == dict.get(c).intValue()) {
+                formed++;
+            }
+            
+            while (left <= right && formed == target) {
+                c = s.charAt(left);
+                if (len == 0 || right - left + 1 < len) {
+                    len = right - left + 1;
+                    ansLeft = left;
+                    ansRight = right;                    
+                }
+                counter.put(c, counter.get(c) - 1);
+                if (dict.containsKey(c) && counter.get(c).intValue() < dict.get(c).intValue()) {
+                    formed--;
+                }
+                left++;          
+            }
+            
+            right++;
+        }
+        return len == 0 ? "" : s.substring(ansLeft, ansRight + 1);
+    }
+}
